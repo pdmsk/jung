@@ -25,21 +25,48 @@ links = []
 data = []
 products = {}
 h = HTMLParser()
-x = {'\u2212': '&minus',
-     '\u2265': '&ge',
-     '\u00D8': '&Oslash',
-     '\u00B2': '&sup2',
-     '\u2264': '&leq',
-     '\u00F6': '&ouml',
-     '\u03A3': '&Sigma',
-     '\u03D5': '&straightphi',
-     '\u00E4': '&auml',
-     '\u00FC': '&uuml',
-     '\u00E9': '&eacute',
-     '\u00FB': '&ucirc',
-     '\u03B5': '&epsi',
-     '\u00DC': '&Uuml',
-     '\u00D7': '&times',
+x = {'\u2212': '-',
+     '\u2265': '&ge;',
+     '\u00D8': '&Oslash;',
+     '\u00B2': '&sup2;',
+     '\u2264': '&leq;',
+     '\u00F6': '&ouml;',
+     '\u03A3': '&Sigma;',
+     '\u03D5': '&straightphi;',
+     '\u00E4': '&auml;',
+     '\u00FC': '&uuml;',
+     '\u00E9': '&eacute;',
+     '\u00FB': '&ucirc;',
+     '\u03B5': '&epsi;',
+     '\u00DC': '&Uuml;',
+     '\u00D7': '&times;',
+     '\u00B3': '&sup3;',
+     '\u00E7': '&ccedil;',
+     '\u03A9': '&Omega;',
+     '\u22A5': '&UpTee;',
+     '\u7443': '&Oslash;', #эти две -- эт жепа
+     '\u0301': '&Oacute;',
+     '\u2242': '&EqualTilde;',
+     '\u03BC': '&mu;',
+     '\u2126': '&Omega;',
+     '\u00DF': '&szlig;'
+     }
+
+x = {'\u2212': '-',
+     '\u2265': '≥',
+     '\u00D8': 'Ø',
+     '\u00B2': '²',
+     '\u2264': '≤',
+     '\u00F6': 'ö',
+     '\u03A3': 'Σ',
+     '\u03D5': 'φ',
+     '\u00E4': 'ä',
+     '\u00FC': 'ü',
+     '\u00E9': 'é',
+     '\u00FB': 'û',
+     '\u03B5': 'ε',
+     '\u00DC': 'Ü',
+     '\u00D7': '×',
      '\u00B3': '&sup3',
      '\u00E7': '&ccedil',
      '\u03A9': '&Omega',
@@ -187,7 +214,7 @@ def get_tech(soup):
                         while name[0] == ' ':
                             name = name[1:]
                 if tech.attrs['class'][0] == 'data' and i != 0:
-                    tech = tech.text.replace('\u2212', '&minus')
+                    tech = tech.text
                     for key in x.keys():
                         tech = tech.replace(key, x[key])
                     # if '+45' in tech:

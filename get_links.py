@@ -46,8 +46,8 @@ def get_links(product_id):
 
 def get_url():
     i = 0
-    product_id = '/ru/online-catalogue/'
-    # product_id = '/ru/online-catalogue/69799066/'
+    # product_id = '/ru/online-catalogue/'
+    product_id = '/ru/online-catalogue/69799066/'
     product_ids = get_links(product_id)
     while len(product_ids) != 1:
         print(len(product_ids))
@@ -66,7 +66,7 @@ def get_url():
         product_ids = str(product_ids)[2:-2].replace("'", '').split(', ')
         i += 1
 
-    new_file = open(f'{WORKING_DIR}/links.json', 'w')
+    new_file = open(f'{WORKING_DIR}/linksss.json', 'w')
     new_file.write(json.dumps(url_data))
     new_file.close()
     return url_data
