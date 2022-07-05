@@ -81,6 +81,7 @@ def get_tech(url):
         tech_char.append('Category')
         tech_char.append('Child')
         tech_char.append('Subchild')
+        tech_char.append('Хлебная крошка')
         tech_char.append('Исполнение')
         tech_char.append('Размер')
         tech_char.append('Power')
@@ -89,6 +90,7 @@ def get_tech(url):
         tech_char.append('Серия')
         tech_char.append('Height above surface')
         tech_char.append('Номинальное напряжение')
+        tech_char.append('Размеры (Ø x В)')
 
 
 
@@ -117,8 +119,8 @@ def get_tech(url):
         tech_char.append('Измерительная толерантность')
     if 'Контакт' not in tech_char:
         tech_char.append('Контакт')
-    if 'Длина нагрузки кабеля (&ge 1,5 мм2)' not in tech_char:
-        tech_char.append('Длина нагрузки кабеля (&ge 1,5 мм2)')
+    if 'Длина нагрузки кабеля (&ge; 1,5 мм2)' not in tech_char:
+        tech_char.append('Длина нагрузки кабеля (&ge; 1,5 мм2)')
     if 'Диапазон контроля' not in tech_char:
         tech_char.append('Диапазон контроля')
     return tech_char
@@ -129,6 +131,7 @@ def get_fieldnames():
     with open('links.json', 'r') as f:
         urls = json.load(f)
     # urls = ['https://www.jung.de/ru/online-catalogue/69799066/']
+    # urls = ['https://www.jung.de/ru/online-catalogue/1085824788/1085824797/']
     for url in urls:
         i += 1
         get_tech(url)

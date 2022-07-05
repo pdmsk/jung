@@ -23,6 +23,7 @@ DOMAIN = 'https://www.jung.de'
 END = '?view=list'
 links = []
 data = []
+link_num = []
 products = {}
 h = HTMLParser()
 x = {'\u2212': '-',
@@ -44,7 +45,7 @@ x = {'\u2212': '-',
      '\u00E7': '&ccedil;',
      '\u03A9': '&Omega;',
      '\u22A5': '&UpTee;',
-     '\u7443': '&Oslash;', #эти две -- эт жепа
+     '\u7443': '&Oslash;',
      '\u0301': '&Oacute;',
      '\u2242': '&EqualTilde;',
      '\u03BC': '&mu;',
@@ -52,32 +53,32 @@ x = {'\u2212': '-',
      '\u00DF': '&szlig;'
      }
 
-x = {'\u2212': '-',
-     '\u2265': '≥',
-     '\u00D8': 'Ø',
-     '\u00B2': '²',
-     '\u2264': '≤',
-     '\u00F6': 'ö',
-     '\u03A3': 'Σ',
-     '\u03D5': 'φ',
-     '\u00E4': 'ä',
-     '\u00FC': 'ü',
-     '\u00E9': 'é',
-     '\u00FB': 'û',
-     '\u03B5': 'ε',
-     '\u00DC': 'Ü',
-     '\u00D7': '×',
-     '\u00B3': '&sup3',
-     '\u00E7': '&ccedil',
-     '\u03A9': '&Omega',
-     '\u22A5': '&UpTee',
-     '\u7443': '&Oslash', #эти две -- эт жепа
-     '\u0301': '&Oacute',
-     '\u2242': '&EqualTilde',
-     '\u03BC': '&mu',
-     '\u2126': '&Omega',
-     '\u00DF': '&szlig'
-     }
+# x = {'\u2212': '-',
+#      '\u2265': '≥',
+#      '\u00D8': 'Ø',
+#      '\u00B2': '²',
+#      '\u2264': '≤',
+#      '\u00F6': 'ö',
+#      '\u03A3': 'Σ',
+#      '\u03D5': 'φ',
+#      '\u00E4': 'ä',
+#      '\u00FC': 'ü',
+#      '\u00E9': 'é',
+#      '\u00FB': 'û',
+#      '\u03B5': 'ε',
+#      '\u00DC': 'Ü',
+#      '\u00D7': '×',
+#      '\u00B3': '&sup3',
+#      '\u00E7': '&ccedil',
+#      '\u03A9': '&Omega',
+#      '\u22A5': '&UpTee',
+#      '\u7443': '&Oslash', #эти две -- эт жепа
+#      '\u0301': '&Oacute',
+#      '\u2242': '&EqualTilde',
+#      '\u03BC': '&mu',
+#      '\u2126': '&Omega',
+#      '\u00DF': '&szlig'
+#      }
 
 def get_html_by_url(src_url):
     webpage = requests.get(src_url, headers=req_headers)
@@ -99,6 +100,7 @@ def get_location(soup):
                 a = a.text
             if '\n' in a:
                 a = a[:-1]
+            a = a.replace(' ', ' ')
             names.append(a)
     products[DB] = names[0]
     products[CATEGORY] = names[1]
@@ -108,12 +110,13 @@ def get_location(soup):
             products[CHILD] = names[3]
             if len(names) >= 6:
                 products[SUBCHILD] = names[4]
+    products['Хлебная крошка'] = names[len(names) - 1]
 
 
 def get_info(soup):
     div = soup.find('div', {'class': 'wrapper product-description'})
     name = div.find('h2').text
-    name = name.replace('  ', '').replace('\n', ' ')
+    name = name.replace('  ', '').replace('\n', ' ').replace(' ',' ')
     if name[0] == ' ':
         name = name[1:]
     if name[len(name) - 1] == ' ':
@@ -138,10 +141,16 @@ def get_image(soup):
 def get_material(soup):
     divs = soup.find_all('div', {'class': 'float-box w9'})
     for div in divs:
-        if ('Ссылочный номер' in div.text) and ('Технические характеристики' not in div.text):
+        print(div.text)
+    for div in divs:
+        if ('Ссылочный номер' in div.text) and ('Технические характеристики' not in div.text) and (products['Ссылочный номер'] + ' \n' in div.text):
             name = div.find('div', {'class': 'float-box'}).text
             if (' ' in name) or (len(name) >= 5):
-                name = name.replace('\n', '').replace('  ', '')
+                while name[0] == '\n' or name[0] == ' ':
+                    name = name[1:]
+                while name[len(name) - 1] == ' ' or name[len(name) - 1] == '\n':
+                    name = name[:-1]
+                name = name.replace('\n', ', ').replace('  ', '').replace(' ', ' ')
                 if name[0] == ' ':
                     name = name[1:]
                 if name[len(name) - 1] == ' ':
@@ -150,6 +159,7 @@ def get_material(soup):
 
 
 def get_data(url):
+    j = 0
     soup = get_html_by_url(url)
     d = []
     hed = []
@@ -174,7 +184,13 @@ def get_data(url):
             get_material(soup)
             get_tech(soup)
             get_image()
-            data.append(products.copy())
+            if products['Ссылочный номер'] not in link_num:
+                data.append(products.copy())
+                link_num.append(products['Ссылочный номер'])
+            else:
+                print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            j = j + 1
+            print(j)
             products.clear()
     else:
         products[URL] = url
@@ -186,13 +202,15 @@ def get_data(url):
         get_image()
         data.append(products.copy())
         products.clear()
+        j = j + 1
+        print(j)
 
 
 def get_name(soup):
     if soup.find('div', {'class': 'wrapper product-description'}):
         soup = soup.find('div', {'class': 'wrapper product-description'})
         soup = soup.find('h2').text
-        soup = soup.replace("\n", " ").replace("  ", "")
+        soup = soup.replace("\n", " ").replace("  ", "").replace(' ', ' ')
         if soup.find(" ") == 0:
             soup = soup[1:]
         products[PRODUCT_NAME] = soup
@@ -216,7 +234,7 @@ def get_tech(soup):
                 if tech.attrs['class'][0] == 'data' and i != 0:
                     tech = tech.text
                     for key in x.keys():
-                        tech = tech.replace(key, x[key])
+                        tech = tech.replace(key, x[key]).replace(' ', ' ')
                     # if '+45' in tech:
                     #     print(tech)
                         # tech = tech.replace('\u2212', '-')
@@ -233,13 +251,26 @@ def get_image():
 
 if __name__ == "__main__":
     i = 0
-    # urls = get_url()
+    urls = get_url()
     with open('links.json', 'r') as f:
         urls = json.load(f)
     i = 0
+    # url = 'https://www.jung.de/ru/online-catalogue/3996973179/'
+#     urls = ['https://www.jung.de/ru/online-catalogue/3730602713/',
+# 'https://www.jung.de/ru/online-catalogue/3730602647/',
+# 'https://www.jung.de/ru/online-catalogue/3730602524/',
+# 'https://www.jung.de/ru/online-catalogue/3730602662/',
+# 'https://www.jung.de/ru/online-catalogue/3730602701/',
+# 'https://www.jung.de/ru/online-catalogue/3730602686/',
+# 'https://www.jung.de/ru/online-catalogue/3730602671/'
+# ]
+    # get_data(url)
+    # urls = ['https://www.jung.de/ru/online-catalogue/126668004/']
+    # urls = ['https://www.jung.de/ru/online-catalogue/1085824788/1085824797/']
+
     for url in urls:
         get_data(url)
-        print(len(urls)-i)
+        # print(len(urls)-i)
         i = i+1
     csv_sav(data)
 
